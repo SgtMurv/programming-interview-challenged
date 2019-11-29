@@ -5,9 +5,9 @@ using namespace std;
 
 class Denomination{
 public:
-	float value;
+	double value;
 	int count;
-	Denomination(float value) : value(value), count(0){};
+	Denomination(double value) : value(value), count(0){};
 };
 
 
@@ -17,8 +17,9 @@ private:
 public:
 	void addDenomination(Denomination d);
 	void printDenominations();
-	void printLeastDenominations(float amount);
-	void checkResult(float amount);
+	void printLeastDenominations(double amount);
+	double round(double number);
+	void checkResult(double amount);
 };
 
 void DenominationSplitter::addDenomination(Denomination d){
@@ -31,35 +32,41 @@ void DenominationSplitter::printDenominations(){
 	}
 }
 
-void DenominationSplitter::printLeastDenominations(float amount){
+void DenominationSplitter::printLeastDenominations(double amount){
 	cout << "The value for counting is £" << amount << endl;
-	cout << "----------------------------------" << endl;
+
 	for(int i =0; i < denominations.size(); i++){
-		float amountCopy = amount;
+		double amountCopy = amount;
 		// Figure out the number of times the denomination is present in the amount.
 		while(amountCopy >= 0){
+			amountCopy = round(amountCopy);
 			amountCopy -= denominations[i].value;
 			denominations[i].count++;
-			// Todo: round to 2 dp here so that the wierd float error does not occur
-			printf("Pre Round: %f | ",amountCopy);
-			amountCopy = ((int)(amountCopy * 100 + .5) / 100.0);
-			printf("Post Round: %f\n",amountCopy);
 		}
 		// we are always going to go at least one over with the minus values so we decrement the count here
-		denominations[i].count--;
+		if(denominations[i].count != 0)denominations[i].count--;
 		amount -= denominations[i].count * denominations[i].value;
-		printf("Number of £%.2f's -> %i \n\n",denominations[i].value, denominations[i].count);
-		// cout << "Number of £"<< to_string(denominations[i].value) << "'s -> " << denominations[i].count << endl;
+		printf("Number of £%.2f's -> %i \n",denominations[i].value, denominations[i].count);
 	}
 }
 
-void DenominationSplitter::checkResult(float amount){
-	float total = 0.0;
+double DenominationSplitter::round(double number){
+	double value = (int)(number * 100 + .5);
+	return (double)value / 100;
+}
+
+void DenominationSplitter::checkResult(double amount){
+	double total = 0.0;
 	// calculate the total from the denominations vector
 	for(vector<Denomination>::iterator it = begin(denominations); it != end(denominations); ++it){
 		total += it->value * it->count;
 	}
-	printf("The total is -> %.2f",total);
+	if(total == amount){
+		cout << "CORRECT! The denomination counts add up! => " << total << endl;
+	}
+	else{
+		cout << "WRONG! The counts don't add up! => " << total << endl;
+	}
 }
 
 int main(){
@@ -73,14 +80,13 @@ int main(){
 	ds.addDenomination(Denomination(0.5));
 	ds.addDenomination(Denomination(0.2));
 	ds.addDenomination(Denomination(0.1));
+	ds.addDenomination(Denomination(0.05));
 	ds.addDenomination(Denomination(0.02));
 	ds.addDenomination(Denomination(0.01));
 
 	// ds.printDenominations();
 
-	ds.printLeastDenominations(11.42);
-	ds.checkResult(1.42);
-
-	
+	ds.printLeastDenominations(68.02);
+	ds.checkResult(68.02);
 	return 0;
 }
