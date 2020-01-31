@@ -1,7 +1,7 @@
 #include <iostream>
 
 using namespace std;
-
+// TODO: Make the word lowercase so that it works in all situations 
 bool doesContainPalindrome(char word[], int size){
 	for(int i =  0; i< size; i++){
 		char leftLetter = word[i];
